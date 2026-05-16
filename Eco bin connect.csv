@@ -1,0 +1,15 @@
+Date,Area,Waste_Type,Collection_Scheduled,Collected_Status,Bin_Status,Complaint_Raised,Scrap_Rate_per_kg
+2024-01-01,Apartment A,Organic,Yes,Yes,Normal,No,0
+2024-01-01,Apartment B,Plastic,Yes,No,Overflow,Yes,12
+2024-01-02,Apartment A,Plastic,Yes,Yes,Normal,No,15
+2024-01-02,Apartment C,Metal,No,No,Overflow,Yes,25
+2024-01-03,Apartment B,Organic,Yes,Yes,Normal,No,0
+2024-01-03,Apartment C,E-waste,Yes,No,Overflow,Yes,30
+2024-01-04,Apartment A,Metal,Yes,Yes,Normal,No,20
+2024-01-04,Apartment B,Plastic,Yes,No,Overflow,Yes,10
+2024-01-05,Apartment C,Organic,Yes,Yes,Normal,No,0
+2024-01-05,Apartment A,E-waste,No,No,Overflow,Yes,35
+2024-01-06,Apartment B,Metal,Yes,Yes,Normal,No,22
+2024-01-06,Apartment C,Plastic,Yes,No,Overflow,Yes,14
+2024-01-07,Apartment A,Organic,Yes,Yes,Normal,No,0
+2024-01-07,Apartment B,E-waste,Yes,No,Overflow,Yes,28
