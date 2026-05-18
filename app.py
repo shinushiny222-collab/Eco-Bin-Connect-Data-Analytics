@@ -1,63 +1,50 @@
 import streamlit as st
+import streamlit_authenticator as stauth
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def login():
-    st.title("Eco-Bin Connect Login")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+names = ["Admin User", "Staff User"]
+usernames = ["admin", "staff"]
 
-    if st.button("Login"):
-        if username == "admin" and password == "1234":
-            st.session_state["logged_in"] = True
-        else:
-            st.error("Invalid login")
+# Passwords (plain text)
+passwords = ["1234", "abcd"]
 
-if "logged_in" not in st.session_state:
-    st.session_state["logged_in"] = False
-
-if not st.session_state["logged_in"]:
-    login()
-    st.stop()
-  
-df = pd.read_csv("Eco bin connect.csv")
-
-st.title("Eco-Bin Connect Dashboard")
-
-area = st.selectbox("Select Area", df['Area'].unique())
-filtered_df = df[df['Area'] == area]
-
-st.subheader("Filtered Data")
-st.write(filtered_df)
+# Convert to hashed passwords
+hashed_passwords = stauth.Hasher(passwords).generate()
 
 
-st.subheader("Waste Type Distribution")
-st.bar_chart(filtered_df['Waste_Type'].value_counts())
+authenticator = stauth.Authenticate(
+    names,
+    usernames,
+    hashed_passwords,
+    "eco_app",
+    "abcdef",
+    cookie_expiry_days=1
+)
+
+name, authentication_status, username = authenticator.login("Login", "main")
 
 
-if 'Latitude' in df.columns and 'Longitude' in df.columns:
-    st.subheader("📍 Waste Locations Map")
-    st.map(df[['Latitude', 'Longitude']].dropna())
+if authentication_status == False:
+    st.error("Username/password incorrect")
 
+if authentication_status == None:
+    st.warning("Please enter login details")
 
-st.subheader("Overflow Bins 🚨")
-overflow = df[df['Bin_Status'] == "Overflow"]
-st.write(overflow)
+if authentication_status:
 
+    authenticator.logout("Logout", "sidebar")
 
-st.subheader("Complaints")
-complaints = df[df['Complaint_Raised'] == "Yes"]
-st.write(complaints)
+    st.sidebar.write(f"Welcome {name} 👋")
 
+    
+    df = pd.read_csv("Eco bin connect.csv")
 
-df['Date'] = pd.to_datetime(df['Date'])
+    st.title("Eco-Bin Connect Dashboard")
 
-st.subheader("Daily Collection Trend")
-st.line_chart(df.groupby('Date')['Collected_Status'].count())
+    area = st.selectbox("Select Area", df['Area'].unique())
+    filtered_df = df[df['Area'] == area]
 
+    st.write(filtered_df)
 
-st.subheader("Insights")
-
-st.write("Most common waste:", df['Waste_Type'].value_counts().idxmax())
-st.write("Most complaints area:", df[df['Complaint_Raised']=='Yes']['Area'].value_counts().idxmax())
-st.write("Most missed waste:", df[df['Collected_Status']=='No']['Waste_Type'].value_counts().idxmax())
+    st.bar_chart(filtered_df['Waste_Type'].value_counts())
