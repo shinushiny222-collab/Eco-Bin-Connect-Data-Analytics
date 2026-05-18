@@ -1,49 +1,38 @@
 import streamlit as st
-import streamlit_authenticator as stauth
-import pandas as pd
-import matplotlib.pyplot as plt
 
-names = ["Admin User", "Staff User"]
-usernames = ["admin", "staff"]
+# -------- USER DATABASE --------
+users = {
+    "admin": "1234",
+    "staff": "abcd"
+}
 
-# Passwords (plain text)
-passwords = ["1234", "abcd"]
+# -------- SESSION --------
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
 
-# Convert to hashed passwords
-hashed_passwords = stauth.Hasher(passwords).hash()
+# -------- LOGIN FUNCTION --------
+def login():
+    st.title("🔐 Eco-Bin Login")
 
-authenticator = stauth.Authenticate(
-    names,
-    usernames,
-    hashed_passwords,
-    "eco_app",
-    "abcdef",
-    cookie_expiry_days=1
-)
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
 
-name, authentication_status, username = authenticator.login("Login", "main")
+    if st.button("Login"):
+        if username in users and users[username] == password:
+            st.session_state.logged_in = True
+            st.session_state.user = username
+        else:
+            st.error("Invalid username or password")
 
+# -------- LOGOUT --------
+def logout():
+    if st.sidebar.button("Logout"):
+        st.session_state.logged_in = False
 
-if authentication_status == False:
-    st.error("Username/password incorrect")
+# -------- FLOW --------
+if not st.session_state.logged_in:
+    login()
+    st.stop()
 
-if authentication_status == None:
-    st.warning("Please enter login details")
-
-if authentication_status:
-
-    authenticator.logout("Logout", "sidebar")
-
-    st.sidebar.write(f"Welcome {name} 👋")
-
-    
-    df = pd.read_csv("Eco bin connect.csv")
-
-    st.title("Eco-Bin Connect Dashboard")
-
-    area = st.selectbox("Select Area", df['Area'].unique())
-    filtered_df = df[df['Area'] == area]
-
-    st.write(filtered_df)
-
-    st.bar_chart(filtered_df['Waste_Type'].value_counts())
+logout()
+st.sidebar.write(f"Welcome {st.session_state.user} 👋")
