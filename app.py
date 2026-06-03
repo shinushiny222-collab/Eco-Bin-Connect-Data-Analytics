@@ -233,6 +233,10 @@ elif page == "📝 Report Waste":
             issue,
             "Pending"
         ]
+        complaints.to_csv(
+    COMPLAINTS_FILE,
+    index=False
+)
         st.success(
             f"Complaint Submitted Successfully! ID: {complaint_id}"
         )
@@ -343,11 +347,6 @@ elif page == "📊 Dashboard":
         st.warning(
             "Eco bin connect.csv file not found"
         )
-    else:
-
-    st.warning(
-        "Eco bin connect.csv file not found"
-    )
 
 # ---------------- ADMIN PANEL ----------------
 
