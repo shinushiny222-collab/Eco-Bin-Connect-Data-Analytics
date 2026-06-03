@@ -343,7 +343,15 @@ elif page == "📊 Dashboard":
         st.warning(
             "Eco bin connect.csv file not found"
         )
-        elif page == "👨‍💼 Admin Panel":
+    else:
+
+    st.warning(
+        "Eco bin connect.csv file not found"
+    )
+
+# ---------------- ADMIN PANEL ----------------
+
+elif page == "👨‍💼 Admin Panel":
 
     st.title("👨‍💼 Admin Panel")
 
