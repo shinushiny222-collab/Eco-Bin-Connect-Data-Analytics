@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 
+# ---------------- PAGE CONFIG ----------------
+
 st.set_page_config(
     page_title="EcoBin Connect",
     page_icon="♻️",
@@ -13,14 +15,22 @@ st.set_page_config(
 USERS_FILE = "users.csv"
 COMPLAINTS_FILE = "complaints.csv"
 
+# Create files automatically if not exists
+
 if not os.path.exists(USERS_FILE):
-    pd.DataFrame(columns=["username", "password"]).to_csv(
-        USERS_FILE, index=False
-    )
+    pd.DataFrame(
+        columns=["username", "password"]
+    ).to_csv(USERS_FILE, index=False)
 
 if not os.path.exists(COMPLAINTS_FILE):
     pd.DataFrame(
-        columns=["Username", "Area", "WasteType", "Issue", "Status"]
+        columns=[
+            "Username",
+            "Area",
+            "WasteType",
+            "Issue",
+            "Status"
+        ]
     ).to_csv(COMPLAINTS_FILE, index=False)
 
 # ---------------- SESSION ----------------
@@ -31,21 +41,31 @@ if "logged_in" not in st.session_state:
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-# ---------------- FUNCTIONS ----------------
+# ---------------- SIGNUP ----------------
 
 def signup():
 
-    st.subheader(" Create Account")
+    st.subheader("📝 Create Account")
 
-    new_user = st.text_input("Username")
+    new_user = st.text_input(
+        "Username",
+        key="signup_username"
+    )
 
     new_pass = st.text_input(
         "Password",
         type="password",
-        key="signup_pass"
+        key="signup_password"
     )
 
-    if st.button("Sign Up"):
+    if st.button(
+        "Sign Up",
+        key="signup_button"
+    ):
+
+        if new_user == "" or new_pass == "":
+            st.warning("Fill all fields")
+            return
 
         users = pd.read_csv(USERS_FILE)
 
@@ -54,24 +74,41 @@ def signup():
 
         else:
 
-            users.loc[len(users)] = [new_user, new_pass]
-            users.to_csv(USERS_FILE, index=False)
+            users.loc[len(users)] = [
+                new_user,
+                new_pass
+            ]
 
-            st.success("Account Created Successfully")
+            users.to_csv(
+                USERS_FILE,
+                index=False
+            )
 
+            st.success(
+                "Account created successfully"
+            )
+
+# ---------------- LOGIN ----------------
 
 def login():
 
-    st.subheader(" Login")
+    st.subheader("🔐 Login")
 
-    username = st.text_input("Username")
+    username = st.text_input(
+        "Username",
+        key="login_username"
+    )
 
     password = st.text_input(
         "Password",
-        type="password"
+        type="password",
+        key="login_password"
     )
 
-    if st.button("Login"):
+    if st.button(
+        "Login",
+        key="login_button"
+    ):
 
         users = pd.read_csv(USERS_FILE)
 
@@ -89,16 +126,17 @@ def login():
             st.rerun()
 
         else:
-            st.error("Invalid Credentials")
-
+            st.error("Invalid username or password")
 
 # ---------------- LOGIN SCREEN ----------------
 
 if not st.session_state.logged_in:
 
-    st.title("EcoBin Connect")
+    st.title("♻️ EcoBin Connect")
 
-    tab1, tab2 = st.tabs(["Login", "Sign Up"])
+    tab1, tab2 = st.tabs(
+        ["Login", "Sign Up"]
+    )
 
     with tab1:
         login()
@@ -110,7 +148,7 @@ if not st.session_state.logged_in:
 
 # ---------------- SIDEBAR ----------------
 
-st.sidebar.title("\\ EcoBin")
+st.sidebar.title("♻️ EcoBin")
 
 st.sidebar.success(
     f"Welcome {st.session_state.username}"
@@ -119,42 +157,43 @@ st.sidebar.success(
 page = st.sidebar.radio(
     "Navigation",
     [
-        " Home",
-        " Report Waste",
-        " My Complaints",
-        " Dashboard"
+        "🏠 Home",
+        "📝 Report Waste",
+        "📋 My Complaints",
+        "📊 Dashboard"
     ]
 )
 
-if st.sidebar.button(" Logout"):
+if st.sidebar.button("🚪 Logout"):
+
     st.session_state.logged_in = False
+    st.session_state.username = ""
+
     st.rerun()
 
 # ---------------- HOME ----------------
 
-if page == " Home":
+if page == "🏠 Home":
 
-    st.title(" EcoBin Connect")
+    st.title("🌱 EcoBin Connect")
 
-    st.markdown(
-        """
-        ### Smart Waste Management System
+    st.markdown("""
+    ### Smart Waste Management System
 
-        Report waste issues
+    ♻️ Report Waste Problems
 
-        Track complaints
+    📋 Track Complaints
 
-        View waste analytics
+    📊 View Analytics
 
-        Keep your city clean 
-        """
-    )
+    🌍 Keep Your Area Clean
+    """)
 
-# ---------------- REPORT PAGE ----------------
+# ---------------- REPORT WASTE ----------------
 
-elif page == " Report Waste":
+elif page == "📝 Report Waste":
 
-    st.title(" Report Waste")
+    st.title("📝 Report Waste")
 
     area = st.text_input("Area")
 
@@ -168,13 +207,21 @@ elif page == " Report Waste":
         ]
     )
 
-    issue = st.text_area("Describe Issue")
+    issue = st.text_area(
+        "Describe Issue"
+    )
 
-    if st.button("Submit Complaint"):
+    if st.button(
+        "Submit Complaint"
+    ):
 
-        complaints = pd.read_csv(COMPLAINTS_FILE)
+        complaints = pd.read_csv(
+            COMPLAINTS_FILE
+        )
 
-        complaints.loc[len(complaints)] = [
+        complaints.loc[
+            len(complaints)
+        ] = [
             st.session_state.username,
             area,
             waste_type,
@@ -188,16 +235,18 @@ elif page == " Report Waste":
         )
 
         st.success(
-            "Complaint Submitted Successfully"
+            "Complaint submitted successfully"
         )
 
 # ---------------- MY COMPLAINTS ----------------
 
-elif page == " My Complaints":
+elif page == "📋 My Complaints":
 
-    st.title(" My Complaints")
+    st.title("📋 My Complaints")
 
-    complaints = pd.read_csv(COMPLAINTS_FILE)
+    complaints = pd.read_csv(
+        COMPLAINTS_FILE
+    )
 
     user_data = complaints[
         complaints["Username"]
@@ -206,31 +255,46 @@ elif page == " My Complaints":
     ]
 
     if len(user_data) == 0:
-        st.info("No Complaints Found")
+
+        st.info(
+            "No complaints found"
+        )
 
     else:
-        st.dataframe(user_data)
+
+        st.dataframe(
+            user_data,
+            use_container_width=True
+        )
 
 # ---------------- DASHBOARD ----------------
 
-elif page == " Dashboard":
+elif page == "📊 Dashboard":
 
-    st.title("EcoBin Dashboard")
+    st.title("📊 EcoBin Dashboard")
 
-    try:
+    csv_file = "Eco bin connect.csv"
 
-        df = pd.read_csv("Eco bin connect.csv")
+    if os.path.exists(csv_file):
+
+        df = pd.read_csv(csv_file)
 
         col1, col2 = st.columns(2)
 
         efficiency = (
-            (df["Collected_Status"] == "Yes").sum()
+            (
+                df["Collected_Status"]
+                ==
+                "Yes"
+            ).sum()
             /
             len(df)
         ) * 100
 
         complaints_count = (
-            df["Complaint_Raised"] == "Yes"
+            df["Complaint_Raised"]
+            ==
+            "Yes"
         ).sum()
 
         col1.metric(
@@ -239,44 +303,45 @@ elif page == " Dashboard":
         )
 
         col2.metric(
-            "Complaints",
+            "Total Complaints",
             complaints_count
         )
 
-        st.subheader("Waste Distribution")
-
-        st.bar_chart(
-            df["Waste_Type"].value_counts()
+        st.subheader(
+            "Waste Distribution"
         )
 
-        st.subheader("Area Wise Waste")
+        st.bar_chart(
+            df["Waste_Type"]
+            .value_counts()
+        )
+
+        st.subheader(
+            "Area Wise Waste"
+        )
 
         st.bar_chart(
             df.groupby("Area")
             .size()
         )
 
-        st.subheader("Overflow Bins")
-
         overflow = df[
-            df["Bin_Status"] == "Overflow"
+            df["Bin_Status"]
+            ==
+            "Overflow"
         ]
 
-        st.dataframe(overflow)
-
-        st.subheader("Insights")
-
-        st.success(
-            f"Most Common Waste: "
-            f"{df['Waste_Type'].value_counts().idxmax()}"
+        st.subheader(
+            "Overflow Bins"
         )
+
+        st.dataframe(
+            overflow,
+            use_container_width=True
+        )
+
+    else:
 
         st.warning(
-            f"Most Complaints Area: "
-            f"{df[df['Complaint_Raised']=='Yes']['Area'].value_counts().idxmax()}"
-        )
-
-    except:
-        st.info(
-            "Upload Eco bin connect.csv file"
+            "Eco bin connect.csv file not found"
         )
