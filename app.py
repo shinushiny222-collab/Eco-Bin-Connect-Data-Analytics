@@ -25,6 +25,7 @@ if not os.path.exists(USERS_FILE):
 if not os.path.exists(COMPLAINTS_FILE):
     pd.DataFrame(
         columns=[
+            "ComplaintID",
             "Username",
             "Area",
             "WasteType",
@@ -160,7 +161,8 @@ page = st.sidebar.radio(
         "🏠 Home",
         "📝 Report Waste",
         "📋 My Complaints",
-        "📊 Dashboard"
+        "📊 Dashboard",
+        "👨‍💼 Admin Panel"
     ]
 )
 
@@ -218,26 +220,22 @@ elif page == "📝 Report Waste":
         complaints = pd.read_csv(
             COMPLAINTS_FILE
         )
-
+        complaint_id = "CMP" + str(
+            len(complaints) + 1
+        ).zfill(3)
         complaints.loc[
-            len(complaints)
+        len(complaints)
         ] = [
+            complaint_id,
             st.session_state.username,
             area,
             waste_type,
             issue,
             "Pending"
         ]
-
-        complaints.to_csv(
-            COMPLAINTS_FILE,
-            index=False
-        )
-
         st.success(
-            "Complaint submitted successfully"
+            f"Complaint Submitted Successfully! ID: {complaint_id}"
         )
-
 # ---------------- MY COMPLAINTS ----------------
 
 elif page == "📋 My Complaints":
@@ -345,3 +343,51 @@ elif page == "📊 Dashboard":
         st.warning(
             "Eco bin connect.csv file not found"
         )
+        elif page == "👨‍💼 Admin Panel":
+
+    st.title("👨‍💼 Admin Panel")
+
+    complaints = pd.read_csv(COMPLAINTS_FILE)
+
+    if complaints.empty:
+
+        st.info("No complaints available")
+
+    else:
+
+        st.dataframe(
+            complaints,
+            use_container_width=True
+        )
+
+        complaint_id = st.selectbox(
+            "Select Complaint",
+            complaints["ComplaintID"]
+        )
+
+        new_status = st.selectbox(
+            "Update Status",
+            [
+                "Pending",
+                "In Progress",
+                "Resolved"
+            ]
+        )
+
+        if st.button("Update Status"):
+
+            complaints.loc[
+                complaints["ComplaintID"] == complaint_id,
+                "Status"
+            ] = new_status
+
+            complaints.to_csv(
+                COMPLAINTS_FILE,
+                index=False
+            )
+
+            st.success(
+                "Status Updated Successfully"
+            )
+
+            st.rerun()
