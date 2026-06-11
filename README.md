@@ -1,26 +1,29 @@
-# Eco-Bin Connect - Data Analytics Project
+# Eco-Bin Connect - Data Analytics
 
-## 📊 Overview
-This project analyzes waste management data in apartment societies to improve efficiency.
+## Live Demo
+🚀 Streamlit Application:
+https://5jyurgntcxpewmnb2j246b.streamlit.app/
 
-## 🔧 Tools Used
+## Project Overview
+Eco-Bin Connect is a waste management and complaint analytics platform that helps citizens report waste-related issues and enables authorities to analyze complaint trends through interactive dashboards.
+
+## Features
+- Complaint Data Analysis
+- Interactive Dashboard
+- Data Cleaning and Processing
+- Waste Management Insights
+- Visual Reports and Charts
+
+## Technologies Used
 - Python
+- Streamlit
 - Pandas
-- Matplotlib
+- Plotly
+- GitHub
 
-## 📁 Dataset
-Contains waste type, collection status, bin status, and complaints.
-
-## 📈 Analysis
-- Waste distribution
-- Collection efficiency
-- Overflow analysis
-- Complaint trends
-
-## 💡 Insights
-- Plastic waste often not collected
-- Overflow bins increase complaints
-- Scrap waste has economic value
-
-## 🚀 Conclusion
-Data analytics helps improve waste management systems.
+## Project Workflow
+1. Collect CSV data
+2. Clean and preprocess data
+3. Analyze complaint trends
+4. Create visualizations
+5. Display insights through Streamlit dashboard
